@@ -1,7 +1,10 @@
 package br.com.alura.screenmatch.principal;
 
 import br.com.alura.screenmatch.modelos.Titulo;
+import br.com.alura.screenmatch.modelos.TituloOmdb;
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,7 +19,7 @@ public class PrincipalComAPI {
         System.out.println("Digite um filme: ");
         var busca = leitura.nextLine();
 
-        String endereco = (": http://www.omdbapi.com/?=t" + busca + "chave");
+        String endereco = (": http://www.omdbapi.com/?=t" + busca + "&apikey=coloque_sua_apikey");
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -28,8 +31,19 @@ public class PrincipalComAPI {
         String json = response.body();
         System.out.println(json);
 
-        Gson gson = new Gson();
-        Titulo meuTitulo = gson.fromJson(json, Titulo.class);
-        System.out.println(meuTitulo);
+        Gson gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+                .create();
+        TituloOmdb meuTituloOmdb = gson.fromJson(json, TituloOmdb.class);
+        System.out.println(meuTituloOmdb);
+        try{
+            Titulo meutTitulo = new Titulo(meuTituloOmdb);
+            System.out.println(meutTitulo);
+        }catch (NumberFormatException e){
+            System.out.println("Ocorreu um erro:" + e.getMessage());
+        } finally {
+            System.out.println("Finalizou!");
+
+
     }
 }
